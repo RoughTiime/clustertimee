@@ -436,7 +436,7 @@ def cluster(df):
     plt.xlabel('SNR (dB)')
     plt.ylabel('Sum-rate (bps/Hz)')
     plt.legend(['Modified 1', 'Modified 2', 'Conventional', 'TDMA'])
-    st.pyplot(fig1)
+    st.pyplot(fig1, use_container_width=True)
 
     buffer = io.BytesIO()
     plt.tight_layout()
