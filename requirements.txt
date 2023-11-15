@@ -28,14 +28,9 @@ matplotlib
 mdurl
 MouseInfo
 mpmath
-mss
 multidict
-networkx
 numpy
 oauthlib
-opencv-pytho
-opt-einsum
-packagin
 pandas
 patsy
 pgf
