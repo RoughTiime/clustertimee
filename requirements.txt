@@ -34,8 +34,6 @@ oauthlib
 pandas
 patsy
 pgf
-Pillo
-pkgutil_resolve_name
 plotl
 plotly-express
 protobuf
