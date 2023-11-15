@@ -34,14 +34,7 @@ oauthlib
 pandas
 patsy
 pgf
-plotl
 plotly-express
-protobuf
-psutil
-pyarrow
-pyasn1
-pyasn1-modules
-referencing
 requests
 requests-oauthlib
 scikit-learn
