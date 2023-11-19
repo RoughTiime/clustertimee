@@ -8,5 +8,4 @@ scipy
 seaborn
 streamlit
 streamlit-elements
-streamlit-modal
 streamlit-option-menu
