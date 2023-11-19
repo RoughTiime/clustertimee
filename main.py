@@ -26,7 +26,6 @@ from matplotlib.backends.backend_agg import RendererAgg
 import io
 import seaborn as sns
 from PIL import Image
-from streamlit_modal import Modal
 import streamlit.components.v1 as components
 import base64
 from io import BytesIO
@@ -436,7 +435,8 @@ def cluster(df):
     plt.xlabel('SNR (dB)')
     plt.ylabel('Sum-rate (bps/Hz)')
     plt.legend(['Modified 1', 'Modified 2', 'Conventional', 'TDMA'])
-    st.pyplot(fig1, use_container_width=True)
+    # st.set_figure_dims(width=15, height=7)
+    st.pyplot(fig1)
 
     buffer = io.BytesIO()
     plt.tight_layout()
@@ -452,19 +452,8 @@ def cluster(df):
     )
   print(modz)
 
+
 try: 
-  st.markdown("""
-          <style>
-                .block-container {
-                      padding-top: 0rem;
-                      padding-bottom: 0rem;
-                      padding-left: 5rem;
-                      padding-right: 5rem;
-                  }
-          </style>
-          """, unsafe_allow_html=True)
-
-
   st.title(f"ClusterTime!")
   st.markdown('<p style="text-align: justify"; color:Black; font-size: 30px;">Its time to Cluster, we will help you clusterize your data or simply choose generate random to see how the program works. The purpose of the program is to clusterize users for NOMA scheme, we aim for the high sumrate score.</p>', unsafe_allow_html=True)
   st.markdown('<p style="text-align: justify"; color:Black; font-size: 20px;">So, lets get started shall we?</p>', unsafe_allow_html=True)
@@ -485,54 +474,43 @@ try:
   )
 
   if selected == "Home":
-    st.info('Click button below, choose to Upload a File or Generate Random.')
-    # st.selectbox("",('','Upload File','Generate Random'),index=None, placeholder="Select Method...")
-    col1, col2, col3,col4, col5 = st.columns([1,2,1.2, 2, 0.5])
-    col3.subheader("OR")
-    modal = Modal("Upload File", key=123)
-    open_modal = col2.button("Upload File")
-    if open_modal:
-        modal.open()
+    #hide humburger and watermark
+    hide_streamlit_style = """
+                <style>
+                #MainMenu {visibility: hidden;}
+                footer {visibility: hidden;}
+                </style>
+                """
+    st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
-    if modal.is_open():
-      st.markdown("""
-          <style>
-                .block-container {
-                      padding-top: 1rem;
-                      padding-bottom: 0rem;
-                      padding-left: 5rem;
-                      padding-right: 5rem;
-                  }
-          </style>
-          """, unsafe_allow_html=True)
-      with modal.container():
+
+    #hide link button 
+    st.markdown("""
+        <style>
+        /* Hide the link button */
+        .stApp a:first-child {
+            display: none;
+        }
+        
+        .css-15zrgzn {display: none}
+        .css-eczf16 {display: none}
+        .css-jn99sy {display: none}
+        </style>
+        """, unsafe_allow_html=True)
+    st.info('Click tabs below, choose to Upload a File or Generate Random.')
+    tab1, tab2 = st.tabs(["Upload File", "Generate Random"])
+    with tab1:
+        st.header("Upload File")
         uploaded_file = st.file_uploader(label="Upload your CSV File", type='csv')
                   
         if uploaded_file is not None:
           df = pd.read_csv(uploaded_file) 
           cluster(df)
-
-
-    modal2 = Modal("Random Generator", key=124)
-    open_modal2 = col4.button("Generate Random")
-    if open_modal2:
-        modal2.open()
-
-    if modal2.is_open():
-      
-      st.markdown("""
-          <style>
-                .block-container {
-                      padding-top: 1rem;
-                      padding-bottom: 0rem;
-                      padding-left: 5rem;
-                      padding-right: 5rem;
-                  }
-          </style>
-          """, unsafe_allow_html=True)
-      with modal2.container():
+        
+    with tab2:
+        st.header("Random Generator")
         randoms = st.text_input("Generate Random, please insert the number of user: ")
-
+      
         # Check if the input is a valid number
         is_valid_input = is_valid_number(randoms)
 
@@ -562,8 +540,7 @@ try:
                                 writer.writerows(data)
                             df = pd.read_csv("random.csv")
                             cluster(df)
-                          
-          
+                                    
   if selected == "How to Use" :
       st.info('This information shows you how to use this program.')
       st.markdown("""<style>[data-testid=column]:nth-of-type(1) [data-testid=stVerticalBlock]{gap: 0rem;}</style>""",unsafe_allow_html=True)
