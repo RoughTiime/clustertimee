@@ -466,10 +466,10 @@ try:
       default_index=0,
       orientation="horizontal",
       styles={
-          "container": {"padding": "0!important", "background-color": "#eee"},
-          "icon": {"color": "black", "font-size": "18px"}, 
+          "container": {"padding": "0!important", "background-color": "#b0b3b8"},
+          "icon": {"color": "white", "font-size": "18px"}, 
           "nav-link": {"font-size": "20px", "text-align": "center", "margin":"4px", "--hover-color": "#00000"},
-          "nav-link-selected": {"background-color": "grey"},
+          "nav-link-selected": {"background-color": "black"},
       }
   )
 
