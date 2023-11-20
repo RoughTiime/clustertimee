@@ -556,8 +556,9 @@ try:
       st.info('If you choose random generate, please follow the instruction below.')
       st.image(Image.open('rando.png'))
       st.text('1. Choose the "Generate Random" Button,')
-      st.text('3. Type in the number of user,')
+      st.text('2. Type in the number of user,')
       st.text('3. Press enter and wait for the program to process.')
+      st.text('4. Wait for the program to process.')
       
 
   #hide humburger and watermark
