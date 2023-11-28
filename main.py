@@ -443,14 +443,16 @@ def cluster(df):
     plt.savefig(buffer, format='pdf')
     plt.close(fig1)  # Close the figure to free up resources
 
+  
     # Download the pdf from the buffer
     st.download_button(
         label="Download PDF",
         data=buffer,
         file_name="cluter.pdf",
-        mime="application/pdf",
+        mime="application/pdf"
+        
     )
-  print(modz)
+  # print(modz)
 
 
 try: 
@@ -474,40 +476,39 @@ try:
   )
 
   if selected == "Home":
-    #hide humburger and watermark
-    hide_streamlit_style = """
-                <style>
-                #MainMenu {visibility: hidden;}
-                footer {visibility: hidden;}
-                </style>
-                """
-    st.markdown(hide_streamlit_style, unsafe_allow_html=True)
-
-
-    #hide link button 
     st.markdown("""
         <style>
-        /* Hide the link button */
-        .stApp a:first-child {
-            display: none;
-        }
-        
-        .css-15zrgzn {display: none}
-        .css-eczf16 {display: none}
-        .css-jn99sy {display: none}
+               .block-container {
+                    padding-top: 0rem;
+                    padding-bottom: 0rem;
+                    padding-left: 0rem;
+                    padding-right: 0rem;
+                }
         </style>
         """, unsafe_allow_html=True)
-    st.info('Click tabs below, choose to Upload a File or Generate Random.')
-    tab1, tab2 = st.tabs(["Upload File", "Generate Random"])
-    with tab1:
+   
+    st.info('Choose to Upload a File or Generate Random.')
+    # tab1, tab2 = st.tabs(["Upload File", "Generate Random"])
+    option = st.selectbox(
+   "",
+   ("Upload File", "Generate Random"),
+   index=None,
+   placeholder="Select method...",
+)
+
+    # with tab1:\
+    if option == "Upload File" :
         st.header("Upload File")
         uploaded_file = st.file_uploader(label="Upload your CSV File", type='csv')
                   
         if uploaded_file is not None:
           df = pd.read_csv(uploaded_file) 
           cluster(df)
-        
-    with tab2:
+
+         
+
+    # with tab2:
+    if option == "Generate Random" :
         st.header("Random Generator")
         randoms = st.text_input("Generate Random, please insert the number of user: ")
       
@@ -542,20 +543,30 @@ try:
                             cluster(df)
                                     
   if selected == "How to Use" :
+      st.markdown("""
+        <style>
+               .block-container {
+                    padding-top: 0rem;
+                    padding-bottom: 0rem;
+                    padding-left: 0rem;
+                    padding-right: 0rem;
+                }
+        </style>
+        """, unsafe_allow_html=True)
       st.info('This information shows you how to use this program.')
       st.markdown("""<style>[data-testid=column]:nth-of-type(1) [data-testid=stVerticalBlock]{gap: 0rem;}</style>""",unsafe_allow_html=True)
       st.markdown('<p style="text-align: justify"; color:Black; font-size: 20px;">First, there are two ways to use this program. You could choose to upload a CSV file that containing X and Y value as the user position, or you could just click generate random to see how the program work.</p>',unsafe_allow_html=True)
       st.info('If you choose to upload, please follow the instruction below.')
-      st.image(Image.open('uplot.png'))
-      st.text('1. Choose the "Upload File" Button,')
+      st.image(Image.open('111.png'))
+      st.text('1. Choose "Upload File" on selectbox,')
       st.text('2. Click "browse file" or drag and drop your file to the area,')
       st.text('3. Choose your CSV file,')
       st.text('4. Click "Upload",')
       st.text('5. Your file has been successfully uploaded!')
       st.text('6. Wait for the program to process.')
       st.info('If you choose random generate, please follow the instruction below.')
-      st.image(Image.open('rando.png'))
-      st.text('1. Choose the "Generate Random" Button,')
+      st.image(Image.open('222.png'))
+      st.text('1. Choose "Generate Random" on selectbox,')
       st.text('2. Type in the number of user,')
       st.text('3. Press enter and wait for the program to process.')
       st.text('4. Wait for the program to process.')
