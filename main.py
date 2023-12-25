@@ -676,8 +676,8 @@ try:
   selected = option_menu(
       menu_title=None,
       # options=["Home","Generate Random","Upload CSV File","How to Use"],
-      options=["Home", "How to Use","About"],
-      icons=["house-fill","question-octagon-fill","info-circle-fill"],
+      options=["About", "How to Use","Home"],
+      icons=["info-circle-fill","question-octagon-fill","house-fill"],
       default_index=0,
       orientation="horizontal",
       styles={
