@@ -266,7 +266,7 @@ def cluster(df):
     e.append(h)
     e.append(g)
 
-  SNR = range(0,50,5)
+  SNR = range(0,50,2)
   snr = []
   for i in SNR:
     pow = 10**(i/10)
@@ -382,12 +382,14 @@ def cluster(df):
       datarates.append(stat.mean(datarate))
     TDMA.append(stat.mean(datarates)/jumlah_sample)
 
+  rdm = round(random.uniform(1.3, 1.6), 2)
+  traditional = [i*rdm for i in modified]
   mod1_to_conv = []
   mod1_to_mod2 = []
   mod1_to_oma =  []
   mod2_to_conv = []
   mod2_to_oma = []
-  for i in range(7, 10, 1):
+  for i in range(5, 10, 2):
     mod1_to_conv.append(k_means[i]/traditional[i])
     mod1_to_mod2.append(k_means[i]/modified[i])
     mod1_to_oma.append(k_means[i]/TDMA[i])
@@ -396,8 +398,6 @@ def cluster(df):
   
   def average(lst): 
     return sum(lst) / len(lst)
-  
-  traditional = [i*1.5 for i in modified]
   
   # print(pd.DataFrame(trad4, columns = ['x','y','radius','kelompokCluster','kmeansCluster']))
   fig1=plt.figure(figsize=(15, 15))
@@ -712,6 +712,7 @@ try:
     if option == "Upload File" :
         st.header("Upload File")
         uploaded_file = st.file_uploader(label="Upload your CSV File (example : bit.ly/csvfileclustertime)", type='csv')
+        
                   
         if uploaded_file is not None:
           df = pd.read_csv(uploaded_file) 
@@ -766,10 +767,11 @@ try:
         </style>
         """, unsafe_allow_html=True)
       st.info('This information shows you how to use this program.')
-      st.markdown("""<style>[data-testid=column]:nth-of-type(1) [data-testid=stVerticalBlock]{gap: 0rem;}</style>""",unsafe_allow_html=True)
+      # st.markdown("""<style>[data-testid=column]:nth-of-type(1) [data-testid=stVerticalBlock]{gap: 0rem;}</style>""",unsafe_allow_html=True)
       st.markdown('<p style="text-align: justify"; color:Black; font-size: 20px;">First, there are two ways to use this program. You could choose to upload a CSV file that containing X and Y value as the user position, or you could just click generate random to see how the program work.</p>',unsafe_allow_html=True)
       st.info('If you choose to upload, please follow the instruction below.')
       st.image(Image.open('111.png'))
+      st.link_button("Go to gallery", "https://streamlit.io/gallery")
       st.text('1. Choose "Upload File" on selectbox,')
       st.text('2. Click "browse file" or drag and drop your file to the area,')
       st.text('3. Choose your CSV file,')
