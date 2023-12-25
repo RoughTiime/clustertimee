@@ -711,7 +711,7 @@ try:
 
     if option == "Upload File" :
         st.header("Upload File")
-        uploaded_file = st.file_uploader(label="Upload your CSV File", type='csv')
+        uploaded_file = st.file_uploader(label="Upload your CSV File (example : bit.ly/csvfileclustertime)", type='csv')
                   
         if uploaded_file is not None:
           df = pd.read_csv(uploaded_file) 
