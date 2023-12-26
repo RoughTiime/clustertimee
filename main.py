@@ -675,8 +675,8 @@ try:
 
   selected = option_menu(
       menu_title=None,
-      options=["About", "How to Use","Home"],
-      icons=["info-circle-fill","question-octagon-fill","house-fill"],
+      options=["About", "How to Use","Try Now!"],
+      icons=["info-circle-fill","question-octagon-fill","play-circle-fill"],
       default_index=0,
       orientation="horizontal",
       styles={
@@ -687,7 +687,7 @@ try:
       }
   )
 
-  if selected == "Home":
+  if selected == "Try Now!":
     st.markdown("""
         <style>
                .block-container {
