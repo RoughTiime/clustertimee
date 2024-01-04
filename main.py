@@ -183,7 +183,8 @@ def cluster(df):
     colors.append(hexadecimal)
   k = []
   k2 = []
-  for i in range(2, jumlah_sample):
+  max_cluster = 10 if jumlah_sample > 10 else jumlah_sample
+  for i in range(2, max_cluster):
     kmeans_model = KMeans(n_clusters=i).fit(df)
     labels = kmeans_model.labels_
     k.append(metrics.silhouette_score(df, labels, metric='euclidean'))
@@ -215,6 +216,37 @@ def cluster(df):
   z_predicted = km2.fit_predict(df)
 
   df['kelompokClusterMod'] = z_predicted
+  # betweenss / totalss
+  x = km.cluster_centers_
+  totalss = 0
+  for i in range(len(x)-1):
+      for j in range(i + 1, len(x)):
+          totalss = totalss + (x[j][1]-x[i][1])**2 + (x[j][0]-x[i][0])**2
+  global accuracy
+  accuracy = totalss/(km.inertia_ + totalss)
+
+  x2 = km2.cluster_centers_
+  totalss2 = 0
+  for i in range(len(x2)-1):
+      for j in range(i + 1, len(x2)):
+          totalss2 = totalss2 + (x2[j][1]-x2[i][1])**2 + (x2[j][0]-x2[i][0])**2
+  global accuracy2
+  accuracy2 = totalss2/(km2.inertia_ + totalss2)
+  #calinski harabasz
+  labels = km.labels_
+  global calbaz
+  calbaz = metrics.calinski_harabasz_score(df, labels)
+
+  labels2 = km2.labels_
+  global calbaz2
+  calbaz2 = metrics.calinski_harabasz_score(df, labels2)
+
+  global dadin
+  dadin = metrics.davies_bouldin_score(df, labels)
+
+  global dadin2
+  dadin2 = metrics.davies_bouldin_score(df, labels2)
+
   trad = raw
   trad2 = []  # add radius + sorted
   trad3 = []  # paired
@@ -242,7 +274,7 @@ def cluster(df):
   trad_final = pd.DataFrame(
       trad4, columns=['x', 'y', 'radius', 'kelompokCluster'])
   eta = 4
-  N = 5
+  N = 3
   o = 0.1
   # o = 3.9811*(10**(-15))
 
@@ -266,7 +298,7 @@ def cluster(df):
     e.append(h)
     e.append(g)
 
-  SNR = range(0,50,2)
+  SNR = range(0,50,5)
   snr = []
   for i in SNR:
     pow = 10**(i/10)
@@ -389,7 +421,8 @@ def cluster(df):
   mod1_to_oma =  []
   mod2_to_conv = []
   mod2_to_oma = []
-  for i in range(5, 10, 2):
+  for i in range(2):
+    i = -(i+1)
     mod1_to_conv.append(k_means[i]/traditional[i])
     mod1_to_mod2.append(k_means[i]/modified[i])
     mod1_to_oma.append(k_means[i]/TDMA[i])
@@ -416,7 +449,7 @@ def cluster(df):
       plt.title('K-Means')
     else:
       k = n2
-      plt.title('Modified K-Means 1')
+      plt.title('Modified Silhouette K-Means')
     for j in range(k):
       dfi = df[df.kelompokCluster ==
               j] if i == 0 else df[df.kelompokClusterMod == j]
@@ -429,7 +462,7 @@ def cluster(df):
     plt.grid()
 
   plt.subplot(3, 2, 4)
-  plt.title('Modified K-Means 2')
+  plt.title('Near-Far K-Means')
   for i in mods:
     plt.scatter(i[0], i[1], color=colors[int(i[4])])
   plt.xlabel('x')
@@ -458,7 +491,7 @@ def cluster(df):
   plt.plot(np.array(TDMA), color='red')
   plt.xlabel('SNR (dB)')
   plt.ylabel('Sum-rate (bps/Hz)')
-  plt.legend(['Modified K-Means 1', 'Modified K-Means 2', 'Near-Far Method', 'TDMA'])
+  plt.legend(['Modified Silhouette K-Means', 'Near-Far K-Means', 'Near-Far Method', 'TDMA'])
 
   fig1.savefig('foo.png')
   st.pyplot(fig1)
@@ -582,10 +615,18 @@ def cluster(df):
       b2.write("After some calculation, we obtained sume rate score for every clustering method, the best sum rate score goes to Modified K-Means 1. ")
       
       #tabel 
-      a1, b2 = st.columns([2,1])
+      a1, b2 = st.columns([3,1.5])
       a1.dataframe(modz) 
       b2.write("This table shows which cluster are the users at, in every clustering method.")
-
+      
+      #accuracy
+      r1, t2 = st.columns([3.3,3])
+      lst = [[str(round((accuracy*100),2))+'%', str(round((accuracy2*100),2))+'%'], [round(dadin, 4), round(dadin2, 4)],
+          [round(calbaz, 4), round(calbaz2, 4)]]
+      r1.dataframe(
+        pd.DataFrame(lst, index = ['Accuracy', 'Davis-Bouldin index', 'Calinski-Harabasz index'],columns =['Kmeans','Modified-silhouette Kmeans'])
+      )
+      t2.write("This table shows performance of Kmeans which represent the quality of clusters which defined the denseness and well-separated of clusters, which relates to a standard concept of a cluster.")
 
   with st.expander("Conclusion"):
       #summary
@@ -630,8 +671,7 @@ def cluster(df):
   pdf.text(95, 110, 'Modified K-Means 1 delivers a better sum-rate score by {} % over OMA.'.format(round((average(mod1_to_oma)-1)*100, 2)))
   pdf.text(95, 115, 'Modified K-Means 2 delivers a worse sum-rate score by {} % over Near-Far Method.'.format(round((1-average(mod2_to_conv))*100, 2)))
   pdf.text(95, 120, 'Modified K-Means 2 delivers a better sum-rate score by {} % over OMA.'.format(round((average(mod2_to_oma)-1)*100, 2)))
-  #Modified K-Means 1 delivers a better sum-rate score by {} % over Modified K-Means 2
-  
+
   pdf.add_page()
   pdf.set_font('Times', '', 16)
   pdf.text(77, 20, 'SIDE-BY-SIDE GRAPH')
@@ -653,7 +693,7 @@ def cluster(df):
     # print(row)
     m = 0
     x = 52
-    
+
     for data in row.values:
         if m > 2:
           pdf.text(x, y, str(int(data)))
@@ -664,9 +704,8 @@ def cluster(df):
     pdf.ln() 
     y = y + 5
   pdf.output('Cluster.pdf', 'F')
-
   with open("Cluster.pdf", "rb") as f:
-      ste.download_button("Download Result", f, "Cluster.pdf")
+    ste.download_button("Download Result", f, "Cluster.pdf")
 
 try: 
   st.title(f"ClusterTime!")
@@ -717,8 +756,6 @@ try:
           df = pd.read_csv(uploaded_file) 
           cluster(df)
 
-         
-
     if option == "Generate Random" :
         st.header("Random Generator")
         randoms = st.text_input("Generate Random, please insert the number of user: ")
@@ -735,7 +772,7 @@ try:
         if randoms:
                             jumlah_sample = int(randoms)
                             def rand():
-                                return(round(random.uniform(-10, 10), 2))
+                                return(round(random.gauss(0, 5), 2))
 
                             header = ['x', 'y']
                             data = []
@@ -801,6 +838,7 @@ try:
      st.video(video_bytes)
      st.subheader('ClusterTime operate as tool/media to observe performance of modified k-means clustering in Non-Orthogonal Multiple Access (NOMA) schemes in increasing sum-rate score and compare it to several clustering method.')
      st.subheader('')
+     st.subheader('K-Means')
      st.write('The first method is K-Means Clustering, to determine the number of K, we use Silhouette Coefficient for evalluating the quality of the resulting clusters. Silhouette score for each data point can be calculated with the following formula: ')
      st.latex(r'''
               S(i) = \frac{b(i)-a(i)}{max(a(i),b(i))}
@@ -818,6 +856,7 @@ try:
      st.latex(r'''
               N\;is\;the\;number\;of\;data\;points
               ''')
+     st.subheader('Modified Silhouette K-Means')
      st.write('However, apart from using the silhouette method from the scikit-learn python module, we also made a modifications where the values a(i) and b(i) were originally average values, here we use the optimum value. In other words, the maximum value of a(i) or intra-cluster distance will be taken. Meanwhile, for the b(i) value or inter-cluster distance, the minimum value will be used. This is because we wants to use an approach by taking the worst-case value.')
      st.write('So it will guarantee better intra-cluster density and inter-cluster gap, as can be seen in the modified formula below.')
      st.latex(r'''
@@ -836,8 +875,8 @@ try:
      st.latex(r'''
               N\;is\;the\;number\;of\;data\;points
               ''')
-     
-     st.write('We also use the near-far pairing. After the cluster and pairing are formed, the sum-rate score for each method will be calculated. Using the Rayleigh channel model, the datarate is calculated with the following equation: ')
+     st.subheader('Near-Far K-Means')
+     st.write("We also use the near-far pairing. In the first stage, all user data will be grouped into several large clusters by K-Means clustering model. Then, enter the second stage, where at this stage, the user location point data will be converted into a radius distance between the user and the Base Station (BS) position, where the BS is assumed to be located at the origin point or what we know as coordinates (0,0). In addition to calculating the radius distance to BS, the data from the user will also calculate the width of the angle against the positive X-axis in cartesian coordinates. Then, the last stage, from the large clusters, each cluster will be sorted by user data from the closest radius to the farthest radius from BS. Then, the closest and farthest user data will be paired, After the cluster and pairing are formed, the sum-rate score for each method will be calculated. Using the Rayleigh channel model, the datarate is calculated with the following equation: ")
      st.latex(r'''
               R_{i} = log_{2}\left ( 1+\frac{a_{i}P\left|h_{1}^{2} \right|}{(a_{i} + \cdots +a_{k})P\left| h_{1}^{2}\right|+\sigma ^{2}} \right )
               ''')
