@@ -359,7 +359,7 @@ def cluster(df):
       mods.append(e[1][:-2])
 
   modz = pd.DataFrame(mods, columns=[
-                      'x', 'y', 'distance', 'Near-Far Method', 'modified_2', 'modified_1'])
+                      'x', 'y', 'distance', 'Near-Far Method', 'Near-Far K-Means', 'Modified Silhouette K-Means'])
 
   modified = []
 
@@ -403,7 +403,7 @@ def cluster(df):
     traditional.append(stat.mean(datarate)/(jumlah_sample/2))
 
   TDMA = []
-  # print(pd.DataFrame(trad4, columns = ['x','y','radius','kelompokCluster','kmeansCluster','h','g']))
+
   for i in snr:
     datarates = []  # setiap user
     for u in trad4:
@@ -432,7 +432,6 @@ def cluster(df):
   def average(lst): 
     return sum(lst) / len(lst)
   
-  # print(pd.DataFrame(trad4, columns = ['x','y','radius','kelompokCluster','kmeansCluster']))
   fig1=plt.figure(figsize=(15, 15))
   plt.subplot(3, 2, 1)
   plt.title('Sample')
@@ -540,7 +539,7 @@ def cluster(df):
       #gambar modified 1
       fig4=plt.figure(figsize=(8,5))
       plt.subplot(1, 1, 1)
-      plt.title('Modified K-Means 1')
+      plt.title('Modified Silhouette K-Means')
       for j in range(k):
         dfi = df[df.kelompokClusterMod == j]
         plt.scatter(dfi.x, dfi['y'], color=colors[j])
@@ -561,7 +560,7 @@ def cluster(df):
       #gambar modified 2
       fig5=plt.figure(figsize=(8,5))
       plt.subplot(1, 1, 1)
-      plt.title('Modified K-Means 2')
+      plt.title('Near-Far K-Means')
       for i in mods:
         plt.scatter(i[0], i[1], color=colors[int(i[4])])
       plt.xlabel('x')
@@ -573,7 +572,7 @@ def cluster(df):
       a1.pyplot(fig5)
       b2.write("")
       b2.write("This Plot shows Form of Clusters created using Combination of K-Means Clustering and Near-Far Scheme. The colors represented clusters formed, total cluster formed are:")
-      b2.write(modz['modified_2'].max() + 1)
+      b2.write(modz['Near-Far K-Means'].max() + 1)
 
       #gambar conventional
       fig6=plt.figure(figsize=(8,5))
@@ -630,11 +629,11 @@ def cluster(df):
 
   with st.expander("Conclusion"):
       #summary
-      st.write('Modified K-Means 1 delivers a better sum-rate score by',round((average(mod1_to_mod2)-1)*100, 2), '% over Modified K-Means 2')
-      st.write('Modified K-Means 1 delivers a better sum-rate score by',round((average(mod1_to_conv)-1)*100, 2), '% over Near-Far Method')
-      st.write('Modified K-Means 1 delivers a better sum-rate score by',round((average(mod1_to_oma)-1)*100, 2), '% over OMA')
-      st.write('Modified K-Means 2 delivers a worse sum-rate score by',round((1-average(mod2_to_conv))*100, 2), '% over Near-Far Method')
-      st.write('Modified K-Means 2 delivers a better sum-rate score by',round((average(mod2_to_oma)-1)*100, 2), '% over OMA')
+      st.write('Modified Silhouette K-Means delivers a better sum-rate score by',round((average(mod1_to_mod2)-1)*100, 2), '% over Near-Far K-Means')
+      st.write('Modified Silhouette K-Means delivers a better sum-rate score by',round((average(mod1_to_conv)-1)*100, 2), '% over Near-Far Method')
+      st.write('Modified Silhouette K-Means delivers a better sum-rate score by',round((average(mod1_to_oma)-1)*100, 2), '% over OMA')
+      st.write('Near-Far K-Means delivers a worse sum-rate score by',round((1-average(mod2_to_conv))*100, 2), '% over Near-Far Method')
+      st.write('Near-Far K-Means delivers a better sum-rate score by',round((average(mod2_to_oma)-1)*100, 2), '% over OMA')
   
   pdf = FPDF()
   pdf.add_page()
@@ -656,7 +655,7 @@ def cluster(df):
   pdf.image('foo5.png', 10, 210, 90, 60)
   pdf.text(95, 220, "This Plot shows Form of Clusters created using Combination of K-Means")
   pdf.text(95, 225, "Clustering and Near-Far Scheme. The colors represented clusters formed,") 
-  pdf.text(95, 230, "total cluster formed are {}.".format(modz['modified_2'].max() + 1))
+  pdf.text(95, 230, "total cluster formed are {}.".format(modz['Near-Far K-Means'].max() + 1))
   pdf.add_page()
   pdf.image('foo6.png', 10, 15, 90, 60)
   pdf.text(95, 25, "This Plot shows Form of Clusters created using Near-Far Method.")
@@ -666,11 +665,11 @@ def cluster(df):
   pdf.text(95, 85, "After some calculation, we obtained sume rate score for every clustering") 
   pdf.text(95, 90, "method, the best sum rate score goes to Modified K-Means 1.") 
   pdf.set_font('Times', '', 8)
-  pdf.text(95, 100, 'Modified K-Means 1 delivers a better sum-rate score by {} % over Modified K-Means 2.'.format(round((average(mod1_to_mod2)-1)*100, 2)))
-  pdf.text(95, 105, 'Modified K-Means 1 delivers a better sum-rate score by {} % over Near-Far Method.'.format(round((average(mod1_to_conv)-1)*100, 2)))
-  pdf.text(95, 110, 'Modified K-Means 1 delivers a better sum-rate score by {} % over OMA.'.format(round((average(mod1_to_oma)-1)*100, 2)))
-  pdf.text(95, 115, 'Modified K-Means 2 delivers a worse sum-rate score by {} % over Near-Far Method.'.format(round((1-average(mod2_to_conv))*100, 2)))
-  pdf.text(95, 120, 'Modified K-Means 2 delivers a better sum-rate score by {} % over OMA.'.format(round((average(mod2_to_oma)-1)*100, 2)))
+  pdf.text(95, 100, 'Modified Silhouette K-Means delivers a better sum-rate score by {} % over Modified K-Means 2.'.format(round((average(mod1_to_mod2)-1)*100, 2)))
+  pdf.text(95, 105, 'Modified Silhouette K-Means delivers a better sum-rate score by {} % over Near-Far Method.'.format(round((average(mod1_to_conv)-1)*100, 2)))
+  pdf.text(95, 110, 'Modified Silhouette K-Means delivers a better sum-rate score by {} % over OMA.'.format(round((average(mod1_to_oma)-1)*100, 2)))
+  pdf.text(95, 115, 'Near-Far K-Means delivers a worse sum-rate score by {} % over Near-Far Method.'.format(round((1-average(mod2_to_conv))*100, 2)))
+  pdf.text(95, 120, 'Near-Far K-Means delivers a better sum-rate score by {} % over OMA.'.format(round((average(mod2_to_oma)-1)*100, 2)))
 
   pdf.add_page()
   pdf.set_font('Times', '', 16)
